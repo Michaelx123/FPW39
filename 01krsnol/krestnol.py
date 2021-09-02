@@ -38,9 +38,9 @@ def main():
             take_input("o")
         counter += 1
         if counter > 4:
-            tmp = check_win()
-            if tmp:
-                print(tmp, "выиграл! Итоговое поле:")
+            who_win = check_win()
+            if who_win:
+                print(who_win, "выиграл! Итоговое поле:")
                 draw_board(True)
                 print("ИГРА ОКОНЧЕНА.")
                 break
