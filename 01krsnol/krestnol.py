@@ -1,20 +1,21 @@
 board_m = '123456789'
-def draw_board():
-    print("-------------")
+def draw_board(itog):
     for i in range(3):
-        print("|", board_m[0+i*3], "|", board_m[1+i*3], "|", board_m[2+i*3], "|")
-        print("-------------")
+        a = board_m[0 + i * 3] if board_m[0 + i * 3] in "+o" or not itog else " "
+        b = board_m[1 + i * 3] if board_m[1 + i * 3] in "+o" or not itog else " "
+        c = board_m[2 + i * 3] if board_m[2 + i * 3] in "+o" or not itog else " "
+        print("", a, b, c, "", sep="|")
 
 def take_input(player_token):
     global board_m
     while True:
-        player_answer = input("Куда поставим " + player_token+"? ")
+        player_answer = input("Куда поставим '" + player_token+"' ? ")
         if player_answer in "123456789" and len(player_answer) == 1:
-             if board_m[int(player_answer)-1] not in "OX":
+             if board_m[int(player_answer)-1] not in "+o":
                 board_m = board_m[:int(player_answer)-1] + player_token + board_m[int(player_answer):]
                 break
              else:
-                print(f"Клетка №{player_answer} занята!")
+                print(f"Клетка № {player_answer} занята!")
         else:
             print("Некорректный ввод. Введите число от 1 до 9.")
 
@@ -27,21 +28,25 @@ def check_win():
 
 def main():
     counter = 0
-    win = False
-    while not win:
-        draw_board()
+    print("ИГРА НАЧАЛАСЬ!")
+    print("Используйте цифры от 1 до 9 для установки крестика или нолика в соотвествующую клетку.")
+    while True:
+        draw_board(False)
         if counter % 2 == 0:
-            take_input("X")
+            take_input("+")
         else:
-            take_input("O")
+            take_input("o")
         counter += 1
         if counter > 4:
             tmp = check_win()
             if tmp:
-                print(tmp, "выиграл!")
-                win = True
+                print(tmp, "выиграл! Итоговое поле:")
+                draw_board(True)
+                print("ИГРА ОКОНЧЕНА.")
                 break
         if counter == 9:
-            print("Ничья!")
+            print("Ничья! Итоговое поле:")
+            draw_board(True)
+            print("ИГРА ОКОНЧЕНА.")
             break
 main()
