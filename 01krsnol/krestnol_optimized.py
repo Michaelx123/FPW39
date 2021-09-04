@@ -1,9 +1,12 @@
 def draw_board(itog):
     for i in range(3):
-        a = board_m[0 + i * 3] if board_m[0 + i * 3] in "+o" or not itog else " "
-        b = board_m[1 + i * 3] if board_m[1 + i * 3] in "+o" or not itog else " "
-        c = board_m[2 + i * 3] if board_m[2 + i * 3] in "+o" or not itog else " "
-        print("", a, b, c, "", sep="|")
+        str_ = ''
+        for j in range(3):
+            if not itog or board_m[j + i * 3] in "+o":
+                str_ = str_ + board_m[j + i * 3] + "|"
+            else:
+                str_ = str_ + " |"
+        print("", str_, sep="|")
 
 def take_input(player_token):
     while True:
@@ -39,7 +42,6 @@ while True:
     else:
         player_token="o"
         answer = take_input(player_token)
-    print(answer)
     board_m = board_m[:answer - 1] + player_token + board_m[answer:]
     counter += 1
     if counter < 4:
