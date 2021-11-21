@@ -1,0 +1,49 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %} News Detail {% endblock title %}
+
+{% block content %}
+<table>
+    <thead>
+        <th>
+            Заголовок
+        </th>
+        <th>
+            Дата публикации
+        </th>
+        <th>
+            Автор
+        </th>
+        <th>
+            Тип статьи
+        </th>
+         <th>
+            Категория статьи
+        </th>
+        <th>
+            Текст статьи
+        </th>
+    </thead>
+    <tr>
+        <td>
+            {{ post.post_header|title }}
+        </td>
+        <td>
+            {{ post.post_created|date:'M d Y' }}
+        </td>
+        <td>
+            {{ post.id_author.id_user.username }}
+        </td>
+        <td>
+            {{ post.post_type }}
+        </td>
+        <td>
+            {{ post.id_post_category.category_name }}
+        </td>
+        <td>
+            {{ post.post_text }}
+        </td>
+    </tr>
+</table>
+
+{% endblock content %}
