@@ -62,7 +62,7 @@ class Post(models.Model):
         return f'{self.post_header.title()}('+self.post_text[:12]+'); Рейтиг = '+str(self.post_rating)
 
     def get_absolute_url(self):  # добавим абсолютный путь, чтобы после создания нас перебрасывало на страницу с товаром
-        return f'/products/{self.id}'
+        return f'/news/{self.id}'
 
 class PostCategory(models.Model):
     id_post = models.ForeignKey(Post, on_delete=models.CASCADE)
