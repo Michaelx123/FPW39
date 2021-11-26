@@ -18,7 +18,7 @@
             Тип статьи
         </th>
          <th>
-            Категория статьи
+            Категории статей
         </th>
         <th>
             Текст статьи
@@ -38,7 +38,9 @@
             {{ post.get_post_type_display }}
         </td>
         <td>
-            {{ post.id_post_category }}
+            {% for cat in post.id_post_category.all %}
+            {{ cat.category_name }} <br>
+            {% endfor %}
         </td>
         <td>
             {{ post.post_text }}

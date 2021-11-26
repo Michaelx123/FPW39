@@ -6,9 +6,9 @@ from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 
-from .models import Post
+from .models import Post, Subscribe
 from .filters import NewsFilter
-from .forms import NewsForm
+from .forms import NewsForm, SubscribeForm
 
 
 class NewsList(LoginRequiredMixin, ListView):
@@ -99,3 +99,10 @@ class NewsDeleteView(DeleteView):
     template_name = '../templates/news_delete.html'
     queryset = Post.objects.all()
     success_url = '/news/'
+
+
+class SubscribeUpdateView(LoginRequiredMixin, UpdateView):
+    model = Subscribe
+    template_name = '../templates/news_subscribe.html'
+    form_class = SubscribeForm
+    #queryset = Subscribe.objects.filter(id_user=User.objects.get())
