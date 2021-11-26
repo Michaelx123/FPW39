@@ -1,8 +1,9 @@
 {% extends 'flatpages/default.html' %}
 
-{% block title %} News Detail {% endblock title %}
+{% block title %} News list {% endblock title %}
 
 {% block content %}
+<h2>Вы действительно хотите удалить данную новость/статью?</h2>
 <table>
     <thead>
         <th>
@@ -35,15 +36,19 @@
             {{ post.id_author.id_user.username }}
         </td>
         <td>
-            {{ post.get_post_type_display }}
+            {{ post.post_type }}
         </td>
         <td>
-            {{ post.id_post_category }}
+            {{ post.id_post_category.category_name }}
         </td>
         <td>
             {{ post.post_text }}
         </td>
     </tr>
 </table>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="подтвердить"></form>
 
 {% endblock content %}

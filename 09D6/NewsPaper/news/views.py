@@ -1,12 +1,17 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import ListView,  UpdateView, CreateView, DetailView, DeleteView
 from django.core.paginator import Paginator  # импортируем класс, позволяющий удобно осуществлять постраничный вывод
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.views.generic import TemplateView
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User, Group
 
 from .models import Post
 from .filters import NewsFilter
 from .forms import NewsForm
 
-class NewsList(ListView):
+
+class NewsList(LoginRequiredMixin, ListView):
     model = Post
     template_name = 'news.html'
     context_object_name = 'news'
@@ -17,6 +22,7 @@ class NewsList(ListView):
         context = super().get_context_data(**kwargs)
         context['filter'] = NewsFilter(self.request.GET, queryset=self.get_queryset())
         context['form'] = NewsForm()
+        context['is_not_authors'] = not self.request.user.groups.filter(name='authors').exists()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -26,6 +32,15 @@ class NewsList(ListView):
             form.save()
 
         return super().get(request, *args, **kwargs)
+
+
+@login_required
+def upgrade_me(request):
+    user = request.user
+    authors_group = Group.objects.get(name='authors')
+    if not request.user.groups.filter(name='authors').exists():
+        authors_group.user_set.add(user)
+    return redirect('/')
 
 
 class NewDetail(DetailView):
@@ -57,18 +72,19 @@ class NewsSearch(ListView):
 #дженерик для получения деталей о товаре
 class NewsDetailView(DetailView):
     template_name = '../templates/news_detail.html'
-    #form_class = NewsForm
     queryset = Post.objects.all()
 
 
 # дженерик для создания объекта. Надо указать только имя шаблона и класс формы, который мы написали в прошлом юните. Остальное он сделает за вас
-class NewsCreateView(CreateView):
+class NewsCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = ('news.add_post',)
     template_name = '../templates/news_create.html'
     form_class = NewsForm
 
 
 # дженерик для редактирования объекта
-class NewsUpdateView(UpdateView):
+class NewsUpdateView(PermissionRequiredMixin, UpdateView):
+    permission_required = ('news.change_post',)
     template_name = '../templates/news_create.html'
     form_class = NewsForm
 

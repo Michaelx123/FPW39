@@ -35,10 +35,10 @@
             {{ post.id_author.id_user.username }}
         </td>
         <td>
-            {{ post.get_post_type_display }}
+            {{ post.post_type }}
         </td>
         <td>
-            {{ post.id_post_category }}
+            {{ post.id_post_category.category_name }}
         </td>
         <td>
             {{ post.post_text }}

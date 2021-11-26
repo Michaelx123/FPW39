@@ -1,13 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import User
-
+from django.contrib.auth.models import User, Group
+from allauth.account.forms import SignupForm
 
 class Author(models.Model):
     id_user = models.OneToOneField(User, on_delete=models.CASCADE)
     author_rating = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f'{self.id_user.username}'
 
     def update_rating(self):
         author_articles = Post.objects.filter(id_author=self, post_type=Post.article)
@@ -34,9 +31,6 @@ class Author(models.Model):
 
 class Category(models.Model):
     category_name = models.CharField(max_length=255, unique=True)
-
-    def __str__(self):
-        return f'{self.category_name}'
 
 
 class Post(models.Model):
@@ -89,3 +83,5 @@ class Comment(models.Model):
     def dislike(self):
         self.comment_rating -= 1
         self.save()
+
+
