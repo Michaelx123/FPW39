@@ -14,8 +14,7 @@ News
 <button> <a href="news/upgrade/"> Хочу стать автором!</a> </button>
 {% endif %}
 <h1>Все новости</h1>
-<h3>Всего новостей: </h3>
-<h3>{{ news|length }}</h3>
+<h3>Всего новостей: {{ news|length }} </h3>
  {% if news %} <!-- Если есть товары, то выводим таблицу с ними -->
         <table>
             <tr>
@@ -51,7 +50,7 @@ News
         <h2>Новостей нет!</h2>
     {% endif %}
 
-<a href="{% url 'news_create' %}">Добавить новую статью</a> <br>
+<a href="{% url 'news_create' %}">Добавить новость/статью</a> <br>
 
 {% if is_paginated %}
 
@@ -72,7 +71,7 @@ News
         <a href="?page={{ page_obj.next_page_number }}">>>></a>
         <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
     {% endif %}
-
 {% endif %}
-
+<br>
+<button> <a href="/news/subscribe/"> Оформить подписку на категории!</a> </button>
 {% endblock content %}

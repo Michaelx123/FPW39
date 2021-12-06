@@ -1,17 +1,20 @@
-from django.shortcuts import render, redirect
-from django.views.generic import ListView,  UpdateView, CreateView, DetailView, DeleteView
+from django.shortcuts import render,  redirect
+from django.template.loader import render_to_string
+from django.views.generic import ListView,  UpdateView, CreateView, DetailView, DeleteView, FormView, View
 from django.core.paginator import Paginator  # импортируем класс, позволяющий удобно осуществлять постраничный вывод
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
+from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 
-from .models import Post
+from .models import Post, Category
 from .filters import NewsFilter
-from .forms import NewsForm
+from .forms import NewsForm, SubscribeForm
 
 
-class NewsList(LoginRequiredMixin, ListView):
+class NewsList(ListView):
     model = Post
     template_name = 'news.html'
     context_object_name = 'news'
@@ -80,7 +83,43 @@ class NewsCreateView(PermissionRequiredMixin, CreateView):
     permission_required = ('news.add_post',)
     template_name = '../templates/news_create.html'
     form_class = NewsForm
-
+#Вариант отправки рассылки через view
+"""  
+    def post(self, request, *args, **kwargs):
+        #Проверяем что создается новость, а не другой тип контента
+        post_type = request.POST['post_type']
+        if post_type == 'N':
+            #Отбираем категории данной новости
+            category_list = request.POST.getlist('id_post_category')
+            selected_categories = list(map(int, category_list))
+            #информация для рассылки
+            post_text = request.POST.get('post_text')
+            post_header = request.POST.get('post_header')
+            for cat in selected_categories:
+                category_name = Category.objects.get(pk=cat).category_name
+                #Отбираем всех пользователей, подписанных на данную категорию
+                subscribers = User.objects.filter(category__pk=cat)
+                for subs in subscribers:
+                    print(subs.email)
+                    html_content = render_to_string(
+                        '../templates/category_mailing.html',
+                        {
+                            'username': subs.username,
+                            'category_name': category_name,
+                            'post_text': post_text,
+                        }
+                    )
+                    msg = EmailMultiAlternatives(
+                        subject=post_header,
+                        body=post_text,
+                        from_email='mklink@yandex.ru',
+                        to=[subs.email],
+                    )
+                    msg.attach_alternative(html_content, "text/html")  # добавляем html
+                    msg.send()
+        self.object = None
+        return super().post(request, *args, **kwargs) #Сохраняем новость и переходим по get_absolute_url, прописанный в моделе
+"""
 
 # дженерик для редактирования объекта
 class NewsUpdateView(PermissionRequiredMixin, UpdateView):
@@ -99,3 +138,35 @@ class NewsDeleteView(DeleteView):
     template_name = '../templates/news_delete.html'
     queryset = Post.objects.all()
     success_url = '/news/'
+
+class SubscribeView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        categories = request.user.category_set.all()
+        ids = []
+        for cat in categories:
+            ids.append(cat.pk)
+
+        form = SubscribeForm({'category': ids} if ids else None)
+
+        context = {
+            'form': form
+        }
+        return render(request, '../templates/news_subscribe.html', context)
+
+    def post(self, request, *args, **kwargs):
+        user = self.request.user
+        category_id = request.POST.getlist('category')
+        all_categories = Category.objects.all()
+        selected_categories = list(map(int, category_id))
+        for category in all_categories:
+            if category.pk in selected_categories:
+                category.subscriber.add(user)
+                category.save()
+            else:
+                category.subscriber.remove(user)
+                category.save()
+
+        return redirect('/news/')
+
+
