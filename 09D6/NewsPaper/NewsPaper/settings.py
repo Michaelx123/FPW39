@@ -10,8 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
-
 from pathlib import Path
+
+#настройки для конфиденциальной информации
+from my_settings import PASS_MKLINK
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -165,7 +168,7 @@ ACCOUNT_FORMS = {'signup': 'news.forms.BasicSignupForm'}
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = 'mklink'
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_PASSWORD = PASS_MKLINK
 EMAIL_USE_SSL = True
 
 DEFAULT_FROM_EMAIL = 'mklink@yandex.ru'
