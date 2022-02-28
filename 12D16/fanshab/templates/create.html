@@ -1,0 +1,13 @@
+{% extends 'default.html' %}
+
+{% block title %} Создание объявления {% endblock title %}
+
+{% block content %}
+<h3>Информация об объявлении</h3>
+<form method="POST">
+    {% csrf_token %}
+    <!-- Теперь нам нужна только готовая форма и кнопка{{ form }} {{ form.media }}-->
+    {{ form.media }}
+    <input type="submit" value="Добавить объявления">
+</form>
+{% endblock content %}
